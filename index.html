@@ -14,6 +14,7 @@
       height: 50%;
       margin-bottom: 20px;
       background: #eee;
+      display: none;
     }
 
   </style>
@@ -23,24 +24,52 @@
   <script type="text/javascript" src="./js/lib/jquery.fullPage.js"></script>
   <script type="text/javascript">
   // 当页面载入完成之后执行该代码
-    $(fcuntion() {
-
+    $(function(){
+    $('#h5').fullpage({
+      sectionsColor: ['#1bbc9b', '#4BBFC3', '#7BAABE', '#f90'],
+      onLeave: function(index, nextIndex, direction) {
+          $('#h5').find('.section').eq(index-1).trigger('onLeave');
+      },
+      afterLoad: function(anchorLink, index) {
+          $('#h5').find('.section').eq(index-1).trigger('onLoad');
+      }
+    });
+    $(".section").on('onLeave',function() {
+      // 使用trigger会冒泡 不仅component触发该事件 向上冒泡到section也会触发该事件
+      // 可以使用triggerHandler代替 不会向上冒泡
+      // 也可在触发事件的回调执行函数中return false;阻止向上冒泡
+      $(this).find('.component').trigger('onLeave');
     })
+    $(".section").on('onLoad',function() {
+      // 使用trigger会冒泡 不仅component触发该事件 向上冒泡到section也会触发该事件
+      $(this).find('.component').trigger('onLoad');
+    })
+    $(".component").on('onLoad',function() {
+      $(this).fadeIn();
+      return false;
+      // 阻止事件向上冒泡
+    })
+    $(".component").on('onLeave',function() {
+      $(this).fadeOut();
+      return false;
+      // 阻止事件向上冒泡
+    })
+});
   </script>
 </head>
 
 <body>
 <!-- 用于验证fullpage.js 切换页面 以及内容组织结构可用 组件能够进行动画 -->
 <div id="h5">
-  <div class="page" id="page-1">
+  <div class="section" id="page-1">
     <div class="component log">logo</div>
     <div class="component slogan">slogan</div>
   </div>
-  <div class="page" id="page-2">
+  <div class="section" id="page-2">
     <div class="component log">logo</div>
     <div class="component slogan">slogan</div>
   </div>
-  <div class="page" id="page-3">
+  <div class="section" id="page-3">
     <div class="component log">logo</div>
     <div class="component slogan">slogan</div>
   </div>
